@@ -9,6 +9,11 @@ public class Util {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "rootroot";
 
+
+    private Util() {
+        throw new UnsupportedOperationException("Этот класс нельзя инстанцировать.");
+    }
+
     public static Connection getConnection() {
         try {
             return DriverManager.getConnection(URL, USERNAME, PASSWORD);

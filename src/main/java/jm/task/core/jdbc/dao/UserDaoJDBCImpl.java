@@ -44,13 +44,22 @@ public class UserDaoJDBCImpl implements UserDao {
         String sql = "INSERT INTO Users (name, lastName, age) VALUES (?, ?, ?)";
         try (Connection connection = Util.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            connection.setAutoCommit(false);
+
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
+
+            connection.commit();
             System.out.println("User с именем — " + name + " добавлен в базу данных");
         } catch (SQLException e) {
             e.printStackTrace();
+            try (Connection connection = Util.getConnection()) {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
         }
     }
 
@@ -59,10 +68,19 @@ public class UserDaoJDBCImpl implements UserDao {
         String sql = "DELETE FROM Users WHERE id = ?";
         try (Connection connection = Util.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            connection.setAutoCommit(false);
+
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
+
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
+            try (Connection connection = Util.getConnection()) {
+                connection.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
         }
     }
 
